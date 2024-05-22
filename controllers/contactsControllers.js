@@ -6,7 +6,6 @@ import {
   createContactSchema,
   updateContactSchema,
 } from '../schemas/contactsSchemas.js';
-import { object } from 'joi';
 
 export const getAllContacts = async (req, res) => {
   const contacts = await contactsService.listContacts();
@@ -14,7 +13,6 @@ export const getAllContacts = async (req, res) => {
 };
 
 export const getOneContact = async (req, res) => {
-  console.log(req.params);
   const { id } = req.params;
   const contact = await contactsService.getContactById(id);
   if (contact) {
@@ -35,14 +33,9 @@ export const deleteContact = async (req, res) => {
 };
 
 export const createContact = async (req, res) => {
-  const { name, email, phone } = req.body;
-  const contact = {
-    name,
-    email,
-    phone,
-  };
+  const contact = req.body;
 
-  const { error, value } = createContactSchema.validate(contact, {
+  const { error } = createContactSchema.validate(contact, {
     abortEarly: false,
   });
 
@@ -52,7 +45,7 @@ export const createContact = async (req, res) => {
       .send(`"message": ${error.details.map((err) => err.message).join(', ')}`);
   }
 
-  const newContact = await contactsService.addContact(name, email, phone);
+  const newContact = await contactsService.addContact(contact);
   res.status(201).send(newContact);
 };
 
@@ -60,9 +53,11 @@ export const updateContact = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
 
-  // if (object.keys(updateData).length === 0) {
-  //   return res.status(400).send({ message: 'missing fields' });
-  // }
+  if (Object.keys(updateData).length === 0) {
+    return res
+      .status(400)
+      .send({ message: 'Body must have at least one field' });
+  }
 
   const { error } = updateContactSchema.validate(updateData, {
     abortEarly: false,
