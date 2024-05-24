@@ -42,7 +42,7 @@ export const createContact = async (req, res) => {
   if (error) {
     return res
       .status(400)
-      .send(`"message": ${error.details.map((err) => err.message).join(', ')}`);
+      .send({ message: error.details.map((err) => err.message).join(', ') });
   }
 
   const newContact = await contactsService.addContact(contact);
@@ -66,7 +66,7 @@ export const updateContact = async (req, res) => {
   if (error) {
     return res
       .status(400)
-      .send(`"message": ${error.details.map((err) => err.message).join(', ')}`);
+      .send({ message: error.details.map((err) => err.message).join(', ') });
   }
 
   const updatedContact = await contactsService.updateContact(id, updateData);
