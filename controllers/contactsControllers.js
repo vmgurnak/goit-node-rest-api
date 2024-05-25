@@ -8,8 +8,13 @@ import {
 } from '../schemas/contactsSchemas.js';
 
 export const getAllContacts = async (req, res) => {
-  const contacts = await contactsService.listContacts();
-  res.send(contacts);
+  try {
+    const contacts = await contactsService.listContacts();
+    res.send(contacts);
+  } catch (error) {
+    // res.status(500).send({ message: error.message });
+    next(error);
+  }
 };
 
 export const getOneContact = async (req, res) => {
