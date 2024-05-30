@@ -7,15 +7,21 @@ import {
   updateContactSchema,
 } from '../schemas/contactsSchemas.js';
 
+// export const getAllContacts = async (req, res) => {
+//   try {
+//     const contacts = await contactsService.listContacts();
+//     res.send(contacts);
+//   } catch (error) {
+//     // res.status(500).send({ message: error.message });
+//     next(error);
+//   }
+// };
+
 export const getAllContacts = async (req, res) => {
-  try {
     const contacts = await contactsService.listContacts();
     res.send(contacts);
-  } catch (error) {
-    // res.status(500).send({ message: error.message });
-    next(error);
-  }
 };
+
 
 export const getOneContact = async (req, res) => {
   const { id } = req.params;
