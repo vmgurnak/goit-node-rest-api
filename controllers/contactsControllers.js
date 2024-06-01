@@ -86,9 +86,13 @@ export const updateContact = async (req, res) => {
       .send({ message: error.details.map((err) => err.message).join(', ') });
   }
 
-  const updatedContact = await contactsService.updateContact(id, updateData);
-  if (!updatedContact) {
-    res.status(404).send({ message: 'Not found' });
+  try {
+    const updatedContact = await contactsService.updateContact(id, updateData);
+    if (updatedContact === null) {
+      res.status(404).send({ message: 'Not found' });
+    }
+    res.status(200).send(updatedContact);
+  } catch (error) {
+    next(error);
   }
-  res.status(200).send(updatedContact);
 };
