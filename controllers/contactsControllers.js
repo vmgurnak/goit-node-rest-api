@@ -1,4 +1,5 @@
 import express from 'express';
+
 const app = express();
 
 import contactsService from '../services/contactsServices.js';
@@ -7,43 +8,45 @@ import {
   updateContactSchema,
 } from '../schemas/contactsSchemas.js';
 
-// export const getAllContacts = async (req, res) => {
-//   try {
-//     const contacts = await contactsService.listContacts();
-//     res.send(contacts);
-//   } catch (error) {
-//     // res.status(500).send({ message: error.message });
-//     next(error);
-//   }
-// };
-
-export const getAllContacts = async (req, res) => {
+export const getAllContacts = async (req, res, next) => {
+  try {
     const contacts = await contactsService.listContacts();
     res.send(contacts);
-};
-
-
-export const getOneContact = async (req, res) => {
-  const { id } = req.params;
-  const contact = await contactsService.getContactById(id);
-  if (contact) {
-    res.send(contact);
-  } else {
-    res.status(404).send({ message: 'Not found' });
+  } catch (error) {
+    next(error);
   }
 };
 
-export const deleteContact = async (req, res) => {
+export const getOneContact = async (req, res, next) => {
   const { id } = req.params;
-  const contact = await contactsService.removeContact(id);
-  if (contact) {
+
+  try {
+    const contact = await contactsService.getContactById(id);
+    if (contact === null) {
+      return res.status(404).send({ message: 'Not found' });
+    }
+    console.log(res.send);
     res.send(contact);
-  } else {
-    res.status(404).send({ message: 'Not found' });
+  } catch (error) {
+    next(error);
   }
 };
 
-export const createContact = async (req, res) => {
+export const deleteContact = async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const contact = await contactsService.removeContact(id);
+    if (contact === null) {
+      return res.status(404).send({ message: 'Not found' });
+    }
+    res.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createContact = async (req, res, next) => {
   const contact = req.body;
 
   const { error } = createContactSchema.validate(contact, {
@@ -55,9 +58,12 @@ export const createContact = async (req, res) => {
       .status(400)
       .send({ message: error.details.map((err) => err.message).join(', ') });
   }
-
-  const newContact = await contactsService.addContact(contact);
-  res.status(201).send(newContact);
+  try {
+    const newContact = await contactsService.addContact(contact);
+    res.status(201).send(newContact);
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const updateContact = async (req, res) => {

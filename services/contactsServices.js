@@ -2,10 +2,17 @@ import * as fs from 'fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
 
+import Contact from '../models/contacts.js';
+
 const contactsPath = path.resolve('db', 'contacts.json');
+// async function listContacts() {
+//   const data = await fs.readFile(contactsPath, { encoding: 'utf-8' });
+//   const contacts = JSON.parse(data);
+//   return contacts;
+// }
+
 async function listContacts() {
-  const data = await fs.readFile(contactsPath, { encoding: 'utf-8' });
-  const contacts = JSON.parse(data);
+  const contacts = await Contact.find();
   return contacts;
 }
 
@@ -14,36 +21,18 @@ async function writeContacts(contacts) {
 }
 
 async function getContactById(contactId) {
-  const contacts = await listContacts();
-  const contact = contacts.find((contact) => contact.id === contactId);
-  if (!contact) {
-    return null;
-  }
+  const contact = await Contact.findById(contactId);
   return contact;
 }
 
 async function removeContact(contactId) {
-  const contacts = await listContacts();
-  const index = contacts.findIndex((contact) => contact.id === contactId);
-  if (index === -1) {
-    return null;
-  }
-
-  const removeContact = contacts[index];
-  contacts.splice(index, 1);
-  await writeContacts(contacts);
-  return removeContact;
+  const deleteContact = await Contact.findByIdAndDelete(contactId);
+  return deleteContact;
 }
 
 async function addContact(contact) {
-  const contacts = await listContacts();
-  const newContact = {
-    id: crypto.randomUUID(),
-    ...contact,
-  };
-  contacts.push(newContact);
-  await writeContacts(contacts);
-  return newContact;
+  const contacts = await Contact.create(contact);
+  return contacts;
 }
 
 async function updateContact(contactId, updateData) {
