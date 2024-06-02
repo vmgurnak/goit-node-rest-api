@@ -99,7 +99,7 @@ export const updateContact = async (req, res) => {
 };
 
 export const updateStatusContact = async (req, res, next) => {
-  const { id } = req.params;
+  const { contactId } = req.params;
   const updateData = req.body;
   const { favorite } = req.body;
 
@@ -115,8 +115,8 @@ export const updateStatusContact = async (req, res, next) => {
 
   try {
     const updatedStatusContact = await contactsService.updateStatusContact(
-      id,
-      favorite
+      contactId,
+      updateData
     );
     if (updatedStatusContact === null) {
       res.status(404).send({ message: 'Not found' });
