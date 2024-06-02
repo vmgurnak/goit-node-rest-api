@@ -6,6 +6,7 @@ import contactsService from '../services/contactsServices.js';
 import {
   createContactSchema,
   updateContactSchema,
+  updateStatusContactSchema,
 } from '../schemas/contactsSchemas.js';
 
 export const getAllContacts = async (req, res, next) => {
@@ -92,6 +93,36 @@ export const updateContact = async (req, res) => {
       res.status(404).send({ message: 'Not found' });
     }
     res.status(200).send(updatedContact);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateStatusContact = async (req, res, next) => {
+  const { id } = req.params;
+  const updateData = req.body;
+  const { favorite } = req.body;
+
+  const { error } = updateStatusContactSchema.validate(updateData, {
+    abortEarly: false,
+  });
+
+  if (error) {
+    return res
+      .status(400)
+      .send({ message: error.details.map((err) => err.message).join(', ') });
+  }
+
+  try {
+    const updatedStatusContact = await contactsService.updateStatusContact(
+      id,
+      favorite
+    );
+    if (updatedStatusContact === null) {
+      res.status(404).send({ message: 'Not found' });
+    } else {
+      res.status(200).send(updatedStatusContact);
+    }
   } catch (error) {
     next(error);
   }

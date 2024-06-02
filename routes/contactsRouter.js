@@ -5,6 +5,7 @@ import {
   deleteContact,
   createContact,
   updateContact,
+  updateStatusContact,
 } from '../controllers/contactsControllers.js';
 
 const jsonParser = express.json();
@@ -20,5 +21,7 @@ contactsRouter.delete('/:id', deleteContact);
 contactsRouter.post('/', jsonParser, createContact);
 
 contactsRouter.put('/:id', jsonParser, updateContact);
+
+contactsRouter.patch('/:contactId/favorite', jsonParser, updateStatusContact);
 
 export default contactsRouter;
