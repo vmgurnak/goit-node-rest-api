@@ -101,7 +101,6 @@ export const updateContact = async (req, res) => {
 export const updateStatusContact = async (req, res, next) => {
   const { contactId } = req.params;
   const updateData = req.body;
-  const { favorite } = req.body;
 
   const { error } = updateStatusContactSchema.validate(updateData, {
     abortEarly: false,

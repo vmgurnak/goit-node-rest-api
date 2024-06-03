@@ -20,12 +20,11 @@ async function addContact(contact) {
   return contacts;
 }
 
-async function updateContact(contactId, updateData) {
-  const updatedContact = await Contact.findByIdAndUpdate(
-    contactId,
-    updateData,
-    { new: true }
-  );
+async function updateContact(id, updateData) {
+  const updatedContact = await Contact.findByIdAndUpdate(id, updateData, {
+    new: true,
+  });
+  console.log(updateContact);
   return updatedContact;
 }
 
@@ -35,6 +34,7 @@ async function updateStatusContact(contactId, updateData) {
     updateData,
     { new: true }
   );
+  console.log(updatedStatusContact);
   return updatedStatusContact;
 }
 
