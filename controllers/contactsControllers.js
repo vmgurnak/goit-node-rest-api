@@ -1,6 +1,6 @@
-import express from 'express';
-
-const app = express();
+import { isValidObjectId } from 'mongoose';
+// import { HttpError } from '../helpers/http-error.js';
+// const { NotFound } = HttpError;
 
 import contactsService from '../services/contactsServices.js';
 import {
@@ -24,9 +24,8 @@ export const getOneContact = async (req, res, next) => {
   try {
     const contact = await contactsService.getContactById(id);
     if (contact === null) {
-      return res.status(404).send({ message: 'Not found' });
+      return res.status(404).send({ message: `ID ${id} is not found` });
     }
-    console.log(res.send);
     res.send(contact);
   } catch (error) {
     next(error);
@@ -39,7 +38,7 @@ export const deleteContact = async (req, res, next) => {
   try {
     const contact = await contactsService.removeContact(id);
     if (contact === null) {
-      return res.status(404).send({ message: 'Not found' });
+      return res.status(404).send({ message: `ID ${id} is not found` });
     }
     res.status(204).end();
   } catch (error) {
@@ -67,7 +66,7 @@ export const createContact = async (req, res, next) => {
   }
 };
 
-export const updateContact = async (req, res) => {
+export const updateContact = async (req, res, next) => {
   const { id } = req.params;
   const updateData = req.body;
 
@@ -90,7 +89,7 @@ export const updateContact = async (req, res) => {
   try {
     const updatedContact = await contactsService.updateContact(id, updateData);
     if (updatedContact === null) {
-      res.status(404).send({ message: 'Not found' });
+      res.status(404).send({ message: `ID ${id} is not found` });
     }
     res.status(200).send(updatedContact);
   } catch (error) {
@@ -99,7 +98,7 @@ export const updateContact = async (req, res) => {
 };
 
 export const updateStatusContact = async (req, res, next) => {
-  const { contactId } = req.params;
+  const { id } = req.params;
   const updateData = req.body;
 
   const { error } = updateStatusContactSchema.validate(updateData, {
@@ -114,11 +113,11 @@ export const updateStatusContact = async (req, res, next) => {
 
   try {
     const updatedStatusContact = await contactsService.updateStatusContact(
-      contactId,
+      id,
       updateData
     );
     if (updatedStatusContact === null) {
-      res.status(404).send({ message: 'Not found' });
+      res.status(404).send({ message: `ID ${id} is not found` });
     } else {
       res.status(200).send(updatedStatusContact);
     }
