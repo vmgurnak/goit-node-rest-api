@@ -1,7 +1,3 @@
-import { isValidObjectId } from 'mongoose';
-// import { HttpError } from '../helpers/http-error.js';
-// const { NotFound } = HttpError;
-
 import contactsService from '../services/contactsServices.js';
 import {
   createContactSchema,
@@ -10,8 +6,9 @@ import {
 } from '../schemas/contactsSchemas.js';
 
 export const getAllContacts = async (req, res, next) => {
+  console.log(req.user);
   try {
-    const contacts = await contactsService.listContacts();
+    const contacts = await contactsService.listContacts({ owner: req.user.id });
     res.send(contacts);
   } catch (error) {
     next(error);
@@ -26,6 +23,11 @@ export const getOneContact = async (req, res, next) => {
     if (contact === null) {
       return res.status(404).send({ message: `ID ${id} is not found` });
     }
+
+    if (contact.owner.toString() !== req.user.id) {
+      return res.status(404).send({ message: `ID ${id} is not found` });
+    }
+
     res.send(contact);
   } catch (error) {
     next(error);
@@ -58,6 +60,9 @@ export const createContact = async (req, res, next) => {
       .status(400)
       .send({ message: error.details.map((err) => err.message).join(', ') });
   }
+
+  contact.owner = req.user.id;
+
   try {
     const newContact = await contactsService.addContact(contact);
     res.status(201).send(newContact);
