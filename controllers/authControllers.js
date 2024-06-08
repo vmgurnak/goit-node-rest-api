@@ -107,5 +107,4 @@ export default {
   register,
   login,
   logout,
-  current,
 };
