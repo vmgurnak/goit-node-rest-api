@@ -5,8 +5,8 @@ async function listContacts(owner) {
   return contacts;
 }
 
-async function getContactById(contactId) {
-  const contact = await Contact.findById(contactId);
+async function getContactByIdOwner(id, userId) {
+  const contact = await Contact.findOne({ _id: id, owner: userId });
   return contact;
 }
 
@@ -40,7 +40,7 @@ async function updateStatusContact(contactId, updateData) {
 
 export default {
   listContacts,
-  getContactById,
+  getContactByIdOwner,
   removeContact,
   addContact,
   updateContact,

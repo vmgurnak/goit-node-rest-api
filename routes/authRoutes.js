@@ -2,13 +2,14 @@ import express from 'express';
 
 const jsonParser = express.json();
 
-import authControllers from '../controllers/authControllers.js';
+import AuthControllers from '../controllers/authControllers.js';
 
 import authMiddleware from '../middlewares/auth.js';
 
 const router = express.Router();
 
-router.post('/register', jsonParser, authControllers.register);
-router.post('/login', jsonParser, authControllers.login);
+router.post('/register', jsonParser, AuthControllers.register);
+router.post('/login', jsonParser, AuthControllers.login);
+router.get('/logout', jsonParser, authMiddleware, AuthControllers.logout);
 
 export default router;

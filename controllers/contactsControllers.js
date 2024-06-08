@@ -8,7 +8,9 @@ import {
 export const getAllContacts = async (req, res, next) => {
   console.log(req.user);
   try {
-    const contacts = await contactsService.listContacts({ owner: req.user.id });
+    const contacts = await contactsService.listContacts({
+      owner: req.user.userId,
+    });
     res.send(contacts);
   } catch (error) {
     next(error);
@@ -17,14 +19,11 @@ export const getAllContacts = async (req, res, next) => {
 
 export const getOneContact = async (req, res, next) => {
   const { id } = req.params;
+  const { userId } = req.user;
 
   try {
-    const contact = await contactsService.getContactById(id);
+    const contact = await contactsService.getContactByIdOwner(id, userId);
     if (contact === null) {
-      return res.status(404).send({ message: `ID ${id} is not found` });
-    }
-
-    if (contact.owner.toString() !== req.user.id) {
       return res.status(404).send({ message: `ID ${id} is not found` });
     }
 
@@ -42,6 +41,11 @@ export const deleteContact = async (req, res, next) => {
     if (contact === null) {
       return res.status(404).send({ message: `ID ${id} is not found` });
     }
+
+    if (contact.owner.toString() !== req.user.userId) {
+      return res.status(404).send({ message: `ID ${id} is not found` });
+    }
+
     res.status(204).end();
   } catch (error) {
     next(error);
@@ -61,7 +65,7 @@ export const createContact = async (req, res, next) => {
       .send({ message: error.details.map((err) => err.message).join(', ') });
   }
 
-  contact.owner = req.user.id;
+  contact.owner = req.user.userId;
 
   try {
     const newContact = await contactsService.addContact(contact);
@@ -96,6 +100,12 @@ export const updateContact = async (req, res, next) => {
     if (updatedContact === null) {
       res.status(404).send({ message: `ID ${id} is not found` });
     }
+    if (updatedContact.owner.toString() !== req.user.userId) {
+      return res.status(404).send({ message: `ID ${id} is not found` });
+    }
+
+    updateData.owner = req.user.userId;
+
     res.status(200).send(updatedContact);
   } catch (error) {
     next(error);
@@ -123,9 +133,12 @@ export const updateStatusContact = async (req, res, next) => {
     );
     if (updatedStatusContact === null) {
       res.status(404).send({ message: `ID ${id} is not found` });
-    } else {
-      res.status(200).send(updatedStatusContact);
     }
+    if (updatedStatusContact.owner.toString() !== req.user.userId) {
+      return res.status(404).send({ message: `ID ${id} is not found` });
+    }
+    updateData.owner = req.user.userId;
+    res.status(200).send(updatedStatusContact);
   } catch (error) {
     next(error);
   }
