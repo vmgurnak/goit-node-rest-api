@@ -91,8 +91,21 @@ async function logout(req, res, next) {
   }
 }
 
+async function current(req, res, next) {
+  try {
+    const user = await User.findById(req.user.userId);
+    res.send({
+      email: user.email,
+      subscription: user.subscription,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export default {
   register,
   login,
   logout,
+  current,
 };
