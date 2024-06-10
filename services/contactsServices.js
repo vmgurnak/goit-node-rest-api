@@ -1,7 +1,9 @@
 import Contact from '../models/contacts.js';
 
-async function listContacts(owner) {
-  const contacts = await Contact.find(owner);
+async function listContacts(userId) {
+  const contacts = await Contact.find({
+    owner: userId,
+  });
   return contacts;
 }
 
@@ -10,8 +12,11 @@ async function getContactByIdOwner(id, userId) {
   return contact;
 }
 
-async function removeContact(contactId) {
-  const deleteContact = await Contact.findByIdAndDelete(contactId);
+async function removeContact(id, userId) {
+  const deleteContact = await Contact.findOneAndDelete({
+    _id: id,
+    owner: userId,
+  });
   return deleteContact;
 }
 
@@ -20,21 +25,21 @@ async function addContact(contact) {
   return contacts;
 }
 
-async function updateContact(id, updateData) {
-  const updatedContact = await Contact.findByIdAndUpdate(id, updateData, {
-    new: true,
-  });
-  console.log(updateContact);
-  return updatedContact;
-}
-
-async function updateStatusContact(contactId, updateData) {
-  const updatedStatusContact = await Contact.findByIdAndUpdate(
-    contactId,
+async function updateContact(id, updateData, userId) {
+  const updatedContact = await Contact.findOneAndUpdate(
+    { _id: id, owner: userId },
     updateData,
     { new: true }
   );
-  console.log(updatedStatusContact);
+  return updatedContact;
+}
+
+async function updateStatusContact(id, updateData, userId) {
+  const updatedStatusContact = await Contact.findOneAndUpdate(
+    { _id: id, owner: userId },
+    updateData,
+    { new: true }
+  );
   return updatedStatusContact;
 }
 

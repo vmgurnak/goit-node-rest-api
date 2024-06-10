@@ -6,11 +6,9 @@ import {
 } from '../schemas/contactsSchemas.js';
 
 export const getAllContacts = async (req, res, next) => {
-  console.log(req.user);
+  const { userId } = req.user;
   try {
-    const contacts = await contactsService.listContacts({
-      owner: req.user.userId,
-    });
+    const contacts = await contactsService.listContacts(userId);
     res.send(contacts);
   } catch (error) {
     next(error);
@@ -35,17 +33,13 @@ export const getOneContact = async (req, res, next) => {
 
 export const deleteContact = async (req, res, next) => {
   const { id } = req.params;
+  const { userId } = req.user;
 
   try {
-    const contact = await contactsService.removeContact(id);
+    const contact = await contactsService.removeContact(id, userId);
     if (contact === null) {
       return res.status(404).send({ message: `ID ${id} is not found` });
     }
-
-    if (contact.owner.toString() !== req.user.userId) {
-      return res.status(404).send({ message: `ID ${id} is not found` });
-    }
-
     res.status(204).end();
   } catch (error) {
     next(error);
@@ -78,6 +72,7 @@ export const createContact = async (req, res, next) => {
 export const updateContact = async (req, res, next) => {
   const { id } = req.params;
   const updateData = req.body;
+  const { userId } = req.user;
 
   if (Object.keys(updateData).length === 0) {
     return res
@@ -95,17 +90,17 @@ export const updateContact = async (req, res, next) => {
       .send({ message: error.details.map((err) => err.message).join(', ') });
   }
 
+  updateData.owner = userId;
+
   try {
-    const updatedContact = await contactsService.updateContact(id, updateData);
+    const updatedContact = await contactsService.updateContact(
+      id,
+      updateData,
+      userId
+    );
     if (updatedContact === null) {
       res.status(404).send({ message: `ID ${id} is not found` });
     }
-    if (updatedContact.owner.toString() !== req.user.userId) {
-      return res.status(404).send({ message: `ID ${id} is not found` });
-    }
-
-    updateData.owner = req.user.userId;
-
     res.status(200).send(updatedContact);
   } catch (error) {
     next(error);
@@ -115,6 +110,7 @@ export const updateContact = async (req, res, next) => {
 export const updateStatusContact = async (req, res, next) => {
   const { id } = req.params;
   const updateData = req.body;
+  const { userId } = req.user;
 
   const { error } = updateStatusContactSchema.validate(updateData, {
     abortEarly: false,
@@ -126,18 +122,17 @@ export const updateStatusContact = async (req, res, next) => {
       .send({ message: error.details.map((err) => err.message).join(', ') });
   }
 
+  updateData.owner = userId;
+
   try {
     const updatedStatusContact = await contactsService.updateStatusContact(
       id,
-      updateData
+      updateData,
+      userId
     );
     if (updatedStatusContact === null) {
       res.status(404).send({ message: `ID ${id} is not found` });
     }
-    if (updatedStatusContact.owner.toString() !== req.user.userId) {
-      return res.status(404).send({ message: `ID ${id} is not found` });
-    }
-    updateData.owner = req.user.userId;
     res.status(200).send(updatedStatusContact);
   } catch (error) {
     next(error);
