@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import gravatar from 'gravatar';
 
 import { createUserSchema } from '../schemas/authScemas.js';
 
@@ -26,14 +27,16 @@ async function register(req, res, next) {
       return res.status(409).send({ message: 'Email in use' });
     }
 
+    const avatarURL = gravatar.url(email, { protocol: 'https' }, true);
     const passwordHash = await bcrypt.hash(password, 10);
 
-    await User.create({ email, password: passwordHash });
+    await User.create({ email, password: passwordHash, avatarURL });
 
     res.status(201).send({
       user: {
         email,
         subscription: 'starter',
+        avatarURL,
       },
     });
   } catch (error) {

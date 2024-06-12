@@ -2,12 +2,14 @@ import * as fs from 'node:fs/promises';
 import path from 'node:path';
 
 import User from '../models/users.js';
+import Jimp from 'jimp';
 
 async function updateAvatar(req, res, next) {
   try {
     console.log(req.file);
+    const img = await Jimp.read(req.file.path);
+    await img.resize(250, 250).writeAsync(req.file.path);
     const newPath = path.resolve('public', 'avatars', req.file.filename);
-    console.log({ newPath });
     await fs.rename(req.file.path, newPath);
 
     const user = await User.findByIdAndUpdate(
@@ -17,9 +19,6 @@ async function updateAvatar(req, res, next) {
       },
       { new: true }
     );
-
-    console.log(user);
-
     res.send({ avatarURL: user.avatarURL });
   } catch (error) {
     next(error);
