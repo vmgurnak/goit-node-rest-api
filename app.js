@@ -1,3 +1,4 @@
+import path from 'path';
 import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
@@ -7,6 +8,7 @@ import './db.js';
 
 import contactsRouter from './routes/contactsRouter.js';
 import authRoutes from './routes/authRoutes.js';
+import userRoutes from './routes/usersRoutes.js';
 
 import authMiddleware from './middlewares/auth.js';
 
@@ -16,8 +18,11 @@ app.use(morgan('tiny'));
 app.use(cors());
 app.use(express.json());
 
+app.use('/avatars', express.static(path.resolve('public/avatars')));
+
 app.use('/api/contacts', authMiddleware, contactsRouter);
 app.use('/users', authRoutes);
+app.use('/users', authMiddleware, userRoutes);
 
 app.use((_, res) => {
   res.status(404).json({ message: 'Route not found' });
