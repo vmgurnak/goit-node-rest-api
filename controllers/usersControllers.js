@@ -16,6 +16,7 @@ async function updateAvatar(req, res, next) {
       req.user.userId,
       {
         avatarURL: `/avatars/${req.file.filename}`,
+        // avatarURL: `${req.file.path}`,
       },
       { new: true }
     );
