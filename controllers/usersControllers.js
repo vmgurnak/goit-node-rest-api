@@ -8,7 +8,7 @@ async function updateAvatar(req, res, next) {
   try {
     console.log(req.file);
     const img = await Jimp.read(req.file.path);
-    await img.resize(250, 250).writeAsync(req.file.path);
+    await img.resize(250, 250).quality(85).writeAsync(req.file.path);
     const newPath = path.resolve('public', 'avatars', req.file.filename);
     await fs.rename(req.file.path, newPath);
 
