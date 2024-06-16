@@ -1,9 +1,11 @@
+import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import gravatar from 'gravatar';
 
 import { createUserSchema } from '../schemas/authScemas.js';
 
+import mail from '../mail.js';
 import User from '../models/users.js';
 
 async function register(req, res, next) {
@@ -29,8 +31,22 @@ async function register(req, res, next) {
 
     const avatarURL = gravatar.url(email, { protocol: 'https' }, true);
     const passwordHash = await bcrypt.hash(password, 10);
+    const verificationToken = crypto.randomUUID();
 
-    await User.create({ email, password: passwordHash, avatarURL });
+    mail.sendMail({
+      to: email,
+      from: 'admin@contacts.com',
+      subject: 'Account Verification for MyContacts App',
+      html: `<a target="_blank" href="http://localhost:3000/users/verify/${verificationToken}">To confirm you email please click on</a>`,
+      text: `http://localhost:3000/users/verify/${verificationToken}`,
+    });
+
+    await User.create({
+      email,
+      password: passwordHash,
+      avatarURL,
+      verificationToken,
+    });
 
     res.status(201).send({
       user: {
@@ -66,6 +82,9 @@ async function login(req, res, next) {
     const passwordCompare = await bcrypt.compare(password, user.password);
     if (passwordCompare === false) {
       return res.status(401).send({ message: 'Email or password is wrong' });
+    }
+    if (user.verify === false) {
+      return res.status(401).send({ message: 'Please verify your email' });
     }
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: '1h',

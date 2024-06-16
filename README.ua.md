@@ -1,73 +1,226 @@
-# Домашнє завдання 2
+The API Contacts
 
-Написати REST API для роботи з колекцією контактів. Для роботи з REST API використовуй [Postman] (https://www.getpostman.com/).
+Сontacts
 
-## Крок 1
+GET /api/contacts
 
-Cтвори репозиторій з назвою `goit-node-rest-api` і помісти на головну гілку (`main`) файли з папки [src](./src). Завваж: папки `src` в репозиторії бути не повинно, тебе цікавить лише її вміст.
+Повертає масив всіх контактів в json-форматі зі статусом 200
 
-Створи гілку `hw02-express` з гілки `main`.
+GET /api/contacts/:id
 
-Встанови модулі командою
+Якщо контакт за id знайдений, повертає об'єкт контакту в json-форматі зі статусом 200
+Якщо контакт за id не знайдено, повертає json формату {"message": "Not found"} зі статусом 404
 
-```bash
-npm i
-```
+DELETE /api/contacts/:id
 
-## Крок 2
+Якщо контакт за id знайдений і видалений, повертає об'єкт видаленого контакту в json-форматі зі статусом 200
+Якщо контакт за id не знайдено, повертає json формату {"message": "Not found"} зі статусом 404
 
-У файл `contactsServices.js` (знаходиться в папці `services`) скопіюй функції з файла `contacts.js` з домашнього завдання до модуля 1.
+POST /api/contacts
 
-## Крок 3
+Отримує body в json-форматі з полями {name, email, phone}. Усі поля є обов'язковими
+Якщо в body немає якихось обов'язкових полів (або передані поля мають не валідне значення), повертає json формату {"message": error.message} (де error.message - змістовне повідомлення з суттю помилки) зі статусом 400
+Якщо body валідне, повертає новостворений об'єкт з полями {id, name, email, phone} і статусом 201
 
-Напиши контролери у файлі `contactsControllers.js` (знаходиться у папці `controllers`) з урахуванням наведених нижче вимог.
+PUT /api/contacts/:id
 
-REST API повинен підтримувати такі раути.
+Отримує body в json-форматі з будь-яким набором оновлених полів (name, email, phone)
+Якщо запит на оновлення здійснено без передачі в body хоча б одного поля, повертає json формату {"message": "Body must have at least one field"} зі статусом 400
+Передані в боді поля мають бути провалідовані
+Якщо передані поля мають не валідне значення, повертає json формату {"message": error.message} (де error.message - змістовне повідомлення з суттю помилки) зі статусом 400
+Якщо з body все добре, За результатом роботи функції повертає оновлений об'єкт контакту зі статусом 200.
+Якщо контакт за id не знайдено, повертає json формату {"message": "Not found"} зі статусом 404
 
-### @ GET /api/contacts
+PATCH /api/contacts/:contactId/favorite
+Отримує параметр contactId
+Отримує body в json-форматі c оновленням поля favorite
+Якщо з body все добре, повертає оновлений об'єкт контакту і статусом 200.
+В іншому випадку, повертає json з ключем {"message":"Not found"} і статусом 404
 
-- Викликає функцію-сервіс `listContacts` для роботи з json-файлом `contacts.json`
-- Повертає масив всіх контактів в json-форматі зі статусом `200`
+User
 
-### @ GET /api/contacts/:id
+Registration request
 
-- Викликає функцію-сервіс `getContactById` для роботи з json-файлом `contacts.json`
-- Якщо контакт за `id` знайдений, повертає об'єкт контакту в json-форматі зі статусом `200`
-- Якщо контакт за `id` не знайдено, повертає json формату `{"message": "Not found"}` зі статусом `404`
+POST /users/register
+Content-Type: application/json
+RequestBody: {
+"email": "example@example.com",
+"password": "examplepassword"
+}
 
-### @ DELETE /api/contacts/:id
+Registration validation error
+Status: 400 Bad Request
+Content-Type: application/json
+ResponseBody: {
+"message": "Помилка від Joi або іншої бібліотеки валідації"
+}
 
-- Викликає функцію-сервіс `removeContact` для роботи з json-файлом `contacts.json`
-- Якщо контакт за `id` знайдений і видалений, повертає об'єкт видаленого контакту в json-форматі зі статусом `200`
-- Якщо контакт за `id` не знайдено, повертає json формату `{"message": "Not found"}` зі статусом `404`
+Registration conflict error
+Status: 409 Conflict
+Content-Type: application/json
+ResponseBody: {
+"message": "Email in use"
+}
 
-### @ POST /api/contacts
+Registration success response
+Status: 201 Created
+Content-Type: application/json
+ResponseBody: {
+"user": {
+"email": "example@example.com",
+"subscription": "starter"
+}
+}
 
-- Отримує `body` в json-форматі з полями `{name, email, phone}`. Усі поля є обов'язковими - для валідації створи у файлі `contactsSchemas.js` (знаходиться у папці `schemas`) схему з використаням пакета `joi`
-- Якщо в `body` немає якихось обов'язкових полів (або передані поля мають не валідне значення), повертає json формату `{"message": error.message}` (де `error.message` - змістовне повідомлення з суттю помилки) зі статусом `400`
-- Якщо `body` валідне, викликає функцію-сервіс `addContact` для роботи з json-файлом `contacts.json`, з передачею їй даних з `body`
-- За результатом роботи функції повертає новостворений об'єкт з полями `{id, name, email, phone}` і статусом `201`
+Login request
 
-### @ PUT /api/contacts/:id
+POST /users/login
+Content-Type: application/json
+RequestBody: {
+"email": "example@example.com",
+"password": "examplepassword"
+}
 
-- Отримує `body` в json-форматі з будь-яким набором оновлених полів (`name`, `email`, `phone`) (всі поля вимагати в боді як обов'язкові не потрібно: якщо якесь із полів не передане, воно має зберегтись у контакта зі значенням, яке було до оновлення)
-- Якщо запит на оновлення здійснено без передачі в `body` хоча б одного поля, повертає json формату `{"message": "Body must have at least one field"}` зі статусом `400`.
-- Передані в боді поля мають бути провалідовані - для валідації створи у файлі `contactsSchemas.js` (знаходиться у папці `schemas`) схему з використанням пакета `joi`. Якщо передані поля мають не валідне значення, повертає json формату `{"message": error.message}` (де `error.message` - змістовне повідомлення з суттю помилки) зі статусом `400`
-- Якщо з `body` все добре, викликає функцію-сервіс `updateContact`, яку слід створити в файлі `contactsServices.js` (знаходиться в папці `services`). Ця функція має приймати `id` контакта, що підлягає оновленню, та дані з `body`, і оновити контакт у json-файлі `contacts.json`
-- За результатом роботи функції повертає оновлений об'єкт контакту зі статусом `200`.
-- Якщо контакт за `id` не знайдено, повертає json формату `{"message": "Not found"}` зі статусом `404`
+Login validation error
+Status: 400 Bad Request
+Content-Type: application/json
+ResponseBody: {
+"message": "Помилка від Joi або іншої бібліотеки валідації"
+}
 
-### Зверни увагу
+Login success response
+Status: 200 OK
+Content-Type: application/json
+ResponseBody: {
+"token": "exampletoken",
+"user": {
+"email": "example@example.com",
+"subscription": "starter"
+}
+}
 
-- Валідацію `body` можна як здійснювати у контролері, так і створити для цих цілей окрему міддлвару, яка буде викликатись до контролера. Для створення міддлвари можеш скористатись функцією `validateBody.js`, яку знайдеш у папці `helpers`
-- Для роботи з помилками можна скористатись функцією `HttpError.js`, яку знайдеш у папці `helpers`
+Login auth error
+Status: 401 Unauthorized
+ResponseBody: {
+"message": "Email or password is wrong"
+}
 
-Якщо вказані функції використовувати не будеш, видали їх з проєкту перед тим, як надсилатимеш роботу на перевірку ментору
+Logout request
 
-## Критерії прийому
+POST /users/logout
+Authorization: "Bearer {{token}}"
 
-- Створено репозиторій з домашнім завданням
-- Посилання на репозиторій (гілку з домашнім завданням) надіслане ментору на перевірку
-- Код відповідає технічному завданню (мають бути в точності дотримані, зокрема, вимоги стосовно струкутри `body`, контенту та статусу відповідей на запити тощо)
-- У коді немає закоментованих ділянок коду
-- Проєкт коректно працює з актуальною LTS-версією Node
+Logout unauthorized error
+Status: 401 Unauthorized
+Content-Type: application/json
+ResponseBody: {
+"message": "Not authorized"
+}
+
+Logout success response
+Status: 204 No Content
+
+Current user request
+
+GET /users/current
+Authorization: "Bearer {{token}}
+
+Current user unauthorized error
+Status: 401 Unauthorized
+Content-Type: application/json
+ResponseBody: {
+"message": "Not authorized"
+}
+
+Current user success response
+Status: 200 OK
+Content-Type: application/json
+ResponseBody: {
+"email": "example@example.com",
+"subscription": "starter"
+}
+
+# поновлення аватарки
+
+PATCH /users/avatars
+
+Content-Type: multipart/form-data
+Authorization: "Bearer {{token}}"
+RequestBody: завантажений файл
+
+# Успішна відповідь
+
+Status: 200 OK
+Content-Type: application/json
+ResponseBody: {
+"avatarURL": "тут буде посилання на зображення"
+}
+
+# Неуспішна відповідь
+
+Status: 401 Unauthorized
+Content-Type: application/json
+ResponseBody: {
+"message": "Not authorized"
+}
+
+Мідлвар для перевірки токена додано до всіх раутів, які захищені.
+Middleware unauthorized error
+Status: 401 Unauthorized
+Content-Type: application/json
+ResponseBody: {
+"message": "Not authorized"
+}
+
+Налаштуй Express на роздачу статичних файлів з папки public.
+При переході по такому URL браузер відобразить зображення. Shell http://locahost:<порт>/avatars/<ім'я файлу з розширенням>
+
+Schemas
+
+Contacts
+{
+name: {
+type: String,
+required: [true, 'Set name for contact'],
+},
+email: {
+type: String,
+},
+phone: {
+type: String,
+},
+favorite: {
+type: Boolean,
+default: false,
+},
+owner: {
+type: mongoose.Schema.Types.ObjectId,
+required: true,
+ref: 'user',
+},
+},
+
+User
+{
+password: {
+type: String,
+required: [true, 'Password is required'],
+},
+email: {
+type: String,
+required: [true, 'Email is required'],
+unique: true,
+},
+subscription: {
+type: String,
+enum: ['starter', 'pro', 'business'],
+default: 'starter',
+},
+token: {
+type: String,
+default: null,
+},
+avatarURL: {
+type: String,
+},
+},

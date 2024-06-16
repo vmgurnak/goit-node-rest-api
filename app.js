@@ -22,7 +22,7 @@ app.use('/avatars', express.static(path.resolve('public/avatars')));
 
 app.use('/api/contacts', authMiddleware, contactsRouter);
 app.use('/users', authRoutes);
-app.use('/users', authMiddleware, userRoutes);
+app.use('/users', userRoutes);
 
 app.use((_, res) => {
   res.status(404).json({ message: 'Route not found' });
