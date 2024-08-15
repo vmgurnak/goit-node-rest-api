@@ -3,8 +3,18 @@ The API Contacts
 Сontacts
 
 GET /api/contacts
-
+http://localhost:3000/api/contacts
 Повертає масив всіх контактів в json-форматі зі статусом 200
+
+Parameters
+Authorization - The token issued to the current user.
+
+Responses
+200 OK
+401 Unauthorized
+{
+"message": "Not authorized"
+}
 
 GET /api/contacts/:id
 

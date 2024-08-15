@@ -5,6 +5,11 @@ import Jimp from 'jimp';
 import User from '../models/users.js';
 import mail from '../mail.js';
 import { verifyEmailSchema } from '../schemas/verifyEmailSchemas.js';
+import { saveFileToCloudinary } from '../utilits/saveFileToCloudinary.js';
+// import { env } from 'node:process';
+// import { env } from '../utilits/env.js';
+
+const ENABLE_CLOUDINARY = process.env.ENABLE_CLOUDINARY;
 
 async function updateAvatar(req, res, next) {
   try {
@@ -16,14 +21,25 @@ async function updateAvatar(req, res, next) {
 
     const img = await Jimp.read(req.file.path);
     await img.resize(250, 250).quality(85).writeAsync(req.file.path);
-    const newPath = path.resolve('public', 'avatars', req.file.filename);
-    await fs.rename(req.file.path, newPath);
+
+    let newPath;
+
+    if (ENABLE_CLOUDINARY === 'true') {
+      newPath = await saveFileToCloudinary(req.file);
+    } else {
+      newPath = path.resolve('public', 'avatars', req.file.filename);
+      await fs.rename(req.file.path, newPath);
+    }
+
+    // const newPath = path.resolve('public', 'avatars', req.file.filename);
+    // await fs.rename(req.file.path, newPath);
 
     const user = await User.findByIdAndUpdate(
       req.user.userId,
       {
         // avatarURL: `/avatars/${req.file.filename}`,
-        avatarURL: path.join('avatars', req.file.filename),
+        // avatarURL: path.join(`${newPath}`, req.file.filename),
+        avatarURL: newPath,
       },
       { new: true }
     );
