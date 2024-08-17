@@ -15,7 +15,7 @@ parameters:
     description: The token issued to the current user.
 responses:
   '200':
-    description: 'Get student by id'
+    description: 'Contacts successfully found'
     content:
       application/json:
         schema:
@@ -30,9 +30,10 @@ responses:
               example: 200
             message:
               type: string
-              example: Successfully found student with id 65ca67e7ae7f10c88b598384!
+              example: Contacts successfully found
             data:
-              type: object
-              $ref: '../../../components/schemas/student.yaml'
+              type: array
+              $ref: ../../components/schemas/contact.yaml
+
   '401':
-    $ref: '../../../components/responses/401.yaml'
+    $ref: ../../components/responses/401.yaml

@@ -12,7 +12,13 @@ export const getAllContacts = async (req, res, next) => {
   const { userId } = req.user;
   try {
     const contacts = await contactsService.listContacts(userId);
-    res.send(contacts);
+    res
+      .status(200)
+      .send({
+        status: 200,
+        message: 'Contacts successfully received',
+        data: contacts,
+      });
   } catch (error) {
     next(error);
   }

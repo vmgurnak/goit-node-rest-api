@@ -1,0 +1,46 @@
+type: object
+required:
+  - _id
+  - name
+  - email
+  - phone
+  - favorite
+  - owner
+  - createdAt
+  - updatedAt
+
+properties:
+  _id:
+    description: Contact record id
+    type: string
+    example: 66630fa6bef3d5faca0e3c28
+  name:
+    description: Wylie Pope
+    type: string
+    example: John Doe
+  email:
+    description: Email of the contact
+    type: string
+    example: est@utquamvel.net
+  phone:
+    description: Phone number of the contact
+    type: string
+    example: (692) 802-2949
+  favorite:
+    description: Is the contact favorite
+    type: boolean
+    example: true
+  owner:
+    description: User id
+    type: string
+    example: 666eb56953879d650c290156
+  createdAt:
+    description: Contact creation date
+    type: string
+    format: date-time
+    example: 2024-06-07T13:48:22.793Z
+  updatedAt:
+    description: Contact update date
+    type: string
+    format: date-time
+    example: 2024-06-10T08:43:41.606Z
