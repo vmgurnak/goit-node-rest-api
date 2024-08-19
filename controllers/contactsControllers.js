@@ -12,13 +12,11 @@ export const getAllContacts = async (req, res, next) => {
   const { userId } = req.user;
   try {
     const contacts = await contactsService.listContacts(userId);
-    res
-      .status(200)
-      .send({
-        status: 200,
-        message: 'Contacts successfully received',
-        data: contacts,
-      });
+    res.status(200).send({
+      status: 200,
+      message: 'Contacts successfully received',
+      data: contacts,
+    });
   } catch (error) {
     next(error);
   }
@@ -31,10 +29,15 @@ export const getOneContact = async (req, res, next) => {
   try {
     const contact = await contactsService.getContactByIdOwner(id, userId);
     if (contact === null) {
-      return res.status(404).send({ message: `ID ${id} is not found` });
+      return res
+        .status(404)
+        .send({ status: 404, message: `ID ${id} is not found` });
     }
-
-    res.send(contact);
+    res.status(200).send({
+      status: 200,
+      message: 'Contacts successfully received',
+      data: contact,
+    });
   } catch (error) {
     next(error);
   }

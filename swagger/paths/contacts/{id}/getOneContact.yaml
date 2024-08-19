@@ -1,8 +1,8 @@
 tags:
   - Сontacts
-summary: Get all contacts
-operationId: getAllContacts
-description: 'Get all contacts'
+summary: Get contacts by id
+operationId: getOneContact
+description: 'Get contacts by id'
 security:
   - bearerAuth: []
 parameters:
@@ -13,6 +13,13 @@ parameters:
       type: string
     example: Bearer <token>
     description: The token issued to the current user.
+  - in: path
+    name: id
+    required: true
+    schema:
+      type: string
+    example: 66630fa6bef3d5faca0e3c28
+    description: The id of the contact
 responses:
   '200':
     description: 'Contacts successfully found'
@@ -34,10 +41,16 @@ responses:
             data:
               type: array
               items:
-                $ref: ../../components/schemas/contact.yaml
+                $ref: ../../../components/schemas/contact.yaml
 
   '401':
-    $ref: ../../components/responses/401.yaml
+    $ref: ../../../components/responses/401.yaml
+
+  '400':
+    $ref: ../../../components/responses/400.yaml
+
+  '404':
+    $ref: ../../../components/responses/404.yaml
 
   '500':
-    $ref: ../../components/responses/500.yaml
+    $ref: ../../../components/responses/500.yaml

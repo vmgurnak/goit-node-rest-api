@@ -1,7 +1,6 @@
 {
   "name": "goit-node-rest-api",
   "type": "module",
-  
   "scripts": {
     "start": "node ./app.js",
     "dev": "nodemon ./app.js",
@@ -23,7 +22,8 @@
     "mongoose": "^8.4.0",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
-    "nodemailer": "^6.9.13"
+    "nodemailer": "^6.9.13",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@redocly/cli": "^1.19.0",

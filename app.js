@@ -11,6 +11,7 @@ import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/usersRoutes.js';
 
 import authMiddleware from './middlewares/auth.js';
+import { swaggerDocs } from './middlewares/swaggerDocs.js';
 
 const app = express();
 
@@ -23,6 +24,8 @@ app.use('/avatars', express.static(path.resolve('public/avatars')));
 app.use('/api/contacts', authMiddleware, contactsRouter);
 app.use('/users', authRoutes);
 app.use('/users', userRoutes);
+
+app.use('/api-docs', swaggerDocs());
 
 app.use((_, res) => {
   res.status(404).json({ message: 'Route not found' });

@@ -17,6 +17,9 @@ paths:
   /api/contacts:
     get:
       $ref: ../swagger/paths/contacts/getAllContacts.yaml
+  /api/contacts/{id}:
+    get:
+      $ref: ../swagger/paths/contacts/{id}/getOneContact.yaml
 components:
   securitySchemes:
     bearerAuth:

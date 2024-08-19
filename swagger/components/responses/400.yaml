@@ -1,4 +1,4 @@
-description: Unauthorized!
+description: ID is not valid!
 content:
   application/json:
     schema:
@@ -9,7 +9,7 @@ content:
       properties:
         status:
           type: integer
-          example: 401
+          example: 400
         message:
           type: string
-          example: 'Not authorized'
+          example: 'ID 66630fa6bef3d5faca0e3c2 is not valid'
