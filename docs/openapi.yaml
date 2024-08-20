@@ -20,6 +20,8 @@ paths:
   /api/contacts/{id}:
     get:
       $ref: ../swagger/paths/contacts/{id}/getOneContact.yaml
+    delete:
+      $ref: ../swagger/paths/contacts/{id}/deleteContact.yaml
 components:
   securitySchemes:
     bearerAuth:

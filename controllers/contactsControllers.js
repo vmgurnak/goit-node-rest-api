@@ -50,9 +50,14 @@ export const deleteContact = async (req, res, next) => {
   try {
     const contact = await contactsService.removeContact(id, userId);
     if (contact === null) {
-      return res.status(404).send({ message: `ID ${id} is not found` });
+      return res
+        .status(404)
+        .send({ status: 404, message: `ID ${id} is not found` });
     }
-    res.status(204).end();
+    res.status(204).send({
+      status: 204,
+      message: 'Contact successfully deleted',
+    });
   } catch (error) {
     next(error);
   }
